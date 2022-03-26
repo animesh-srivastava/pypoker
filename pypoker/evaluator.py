@@ -1,5 +1,4 @@
 from itertools import combinations
-from re import L
 
 
 class Evaluator(object):
