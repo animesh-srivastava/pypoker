@@ -1,7 +1,7 @@
 # PyPoker
 
 ## What is it?
-This is a simple python library for poker things. It's supposed to be a fully fledged poker engine, but that's in the to-do list. As of now, this library has two components - Deck, Evalutator and Poker. As of now, it supports Texas Hold'em, Pot Limit Omaha 4card, Pot Limit Omaha 5 card and Pot Limit Omaha 6 card.
+This is a simple python library for poker things. It's supposed to be a fully fledged poker engine, but that's in the to-do list. As of now, this library has three classes - Deck, Evalutator and Poker. As of now, it supports Texas Hold'em, Pot Limit Omaha 4 card, Pot Limit Omaha 5 card and Pot Limit Omaha 6 card.
 
 ## What is Deck?
 Deck is a class that represents a deck of cards. It relies on ```random``` library for random sampling - which is not very secure way of doing things. However, it works as of now. The deck supports having multiple decks of cards - which was designed to be extensible to other card games such as Rummy.
