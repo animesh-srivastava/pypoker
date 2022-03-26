@@ -267,6 +267,8 @@ class Evaluator(object):
 
             1. Name of the combination
             2. Rank of the combination (1 - 10)
+            3. Rank of the highest card in the combination
+            4. Name of the highest card in the combination
         """
         if isinstance(cards, str):
             cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
@@ -363,22 +365,17 @@ class Evaluator(object):
 
         Returns a list containing following items
             1. Rank of the combination (1 - 10)
-            2. Card combination
-            3. Name of the combination
-            4. Highest rank of the combination
+            2. Name of the winning combination
+            3. Rank of the winning combination
+            4. Name of the highest card in the winning combination
+            5. Rank of the highest card in the winning combination
         """
         winning_combo, winning_combo_name, winning_combo_rank, high_card_rank, high_card_name = self.strength_evaluation(
             holecards, community_cards, game_type)
         return [winning_combo, winning_combo_name, winning_combo_rank, high_card_name, high_card_rank]
 
-    def get_high_rank(self, card: str) -> int:
-        """
-        Get rank of the highest card in combo
-        """
-        card = sorted(card[::2], key=lambda x: self.ranks.index(x))
-        return self.ranks.index(card[-1][0])
-
-    def find_intersection(self, cards1, cards2):
+    def find_intersection(self, cards1, cards2) -> str:
+        """Find intersection between two sets of cards"""
         if isinstance(cards1, str):
             cards1 = [cards1[i: i+2] for i in range(0, len(cards1), 2)]
 
@@ -400,14 +397,15 @@ class Evaluator(object):
 
         Returns a list of dictionaries with following keys
             'best_combo': Best combination of cards
-            'best_combo_rank': Rank of the best combination
             'best_combo_name': Name of the best combination
-            'holecards': Hole cards
+            'best_combo_rank': Rank of the best combination
             'community_cards': Community cards
-            'holecards_used': Hole cards used in making the best combination
             'community_cards_used': Community cards used in making the best combination
             'high_rank': Highest rank of the best combination
-            'player_number': Player number (1 - 9)
+            'high_rank_card': Name of the card with the highest rank
+            'holecards': Hole cards
+            'holecards_used': Hole cards used in making the best combination
+            'player': Player number (p1 - p9)
             'winner': Boolean value indicating whether the player is the winner
         """
         strengths = dict()
