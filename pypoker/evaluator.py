@@ -385,7 +385,7 @@ class Evaluator(object):
         set2 = set(cards2)
         return "".join(set1.intersection(set2))
 
-    def declare_winner(self, player_cards: dict, community_cards: str, game_type: str) -> list:
+    def declare_winner(self, player_cards: dict, community_cards: str, game_type: str, return_type: str = 'list') -> list:
         """
         Given a set of cards, determine the winner
 
@@ -449,8 +449,10 @@ class Evaluator(object):
                     "player": k,
                     "winner": False
                 })
-
-        return [v for v in return_dict.values()]
+        if return_type == 'list':
+            return [v for v in return_dict.values()]
+        elif return_type == 'dict':
+            return return_dict
 
 
 if __name__ == '__main__':

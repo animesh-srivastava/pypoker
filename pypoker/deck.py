@@ -96,6 +96,8 @@ class Deck(object):
         else:
             raise ValueError("Invalid output format.")
 
+    # def get_random_cards(self, n) -> list:
+
     def get_community_cards(self) -> list:
         """
         Get a list of community cards
@@ -206,8 +208,38 @@ class Deck(object):
             "Ah": self.num_decks,
         }
 
+    def knock_cards(self, list_of_cards):
+        """
+        Remove cards from the deck
+        """
+        for card in list_of_cards:
+            self.deck[card] -= 1
+
+    def get_random_cards(self, num_cards) -> str:
+        """
+        Get random cards
+        """
+        remaining_deck = []
+        for card, times in self.deck.items():
+            for _ in range(times):
+                remaining_deck.append(card)
+        return random.sample(remaining_deck, num_cards)
+        pass
+
+    def knockout_cards(self, deadcards: str):
+        """
+        Update the dead cards
+        """
+        if not deadcards or not len(deadcards):
+            return None
+        if isinstance(deadcards, str):
+            deadcards = [deadcards[i: i+2]
+                         for i in range(0, len(deadcards), 2)]
+        for card in deadcards:
+            self.deck[card] -= 1
+
 
 if __name__ == '__main__':
     deck = Deck()
-    print(deck.get_unique_card_sets(3, 5, 'str'))
+    print(deck.get_unique_card_sets(5, 5, 'str'))
     print(deck.deal_poker_hands('plo5', 3))
