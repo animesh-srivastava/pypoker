@@ -20,8 +20,7 @@ class Evaluator(object):
             10: "High Card"
         }
         self.suites = ["s", "h", "d", "c"]
-        self.ranks = ["2", "3", "4", "5", "6",
-                      "7", "8", "9", "T", "J", "Q", "K", "A"]
+        self.ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"]
         self.rank_and_suites = [
             "As", "Ad", "Ac", "Ah",
             "Ks", "Kd", "Kc", "Kh",
@@ -47,13 +46,15 @@ class Evaluator(object):
         3. The highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
         is_flush = self._is_flush(cards)
         is_straight = self._is_straight(cards)
         is_royal = self._is_royal(cards)
+
         if is_flush[0] and is_royal[0] and is_straight[0]:
             return True, is_straight[1], is_straight[2]
+
         return False, -1, None
 
     def _is_straight_flush(self, cards: list) -> bool:
@@ -65,12 +66,14 @@ class Evaluator(object):
         3. The highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
-        is_flush = self._is_flush(cards)
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
         is_straight = self._is_straight(cards)
-        if is_flush[0] and is_straight[0]:
+        is_flush = self._is_flush(cards)
+
+        if is_straight[0] and is_flush[0]:
             return True, is_straight[1], is_straight[2]
+
         return False, -1, None
 
     def _is_royal(self, cards: list) -> tuple:
@@ -82,12 +85,19 @@ class Evaluator(object):
         3. The Ace
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
-        ranks = [card[0] for card in cards]
-        ranks = sorted(ranks, key=lambda x: self.ranks.index(x))
-        if ranks[-1] == 'A':
-            return True, self.ranks.index(ranks[-1]), ranks[-1]
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
+        # ranks_list = [card[0] for card in cards]
+        # ranks_list = sorted(ranks_list, key = lambda x: self.ranks.index(x))
+        is_straight = self._is_straight(cards)
+        is_flush = self._is_flush(cards)
+
+        if is_straight[1] == 'A':
+            if is_straight[0] and is_flush[0]:
+                # return True, self.ranks.index(ranks_list[-1]), ranks_list[-1]
+                # return True, is_straight[1], is_straight[2]
+                return True, is_straight[1], is_straight[2]
+
         return False, -1, None
 
     def _is_flush(self, cards: list) -> tuple:
@@ -99,14 +109,15 @@ class Evaluator(object):
         3. The highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
         suites = [card[1] for card in cards]
+
         if len(set(suites)) == 1:
-            sorted_ranks = sorted(
-                cards, key=lambda x: self.ranks.index(x[0]))[-1][0]
+            sorted_ranks = sorted(cards, key=lambda x: self.ranks.index(x[0]))[-1][0]
             return True, self.ranks.index(sorted_ranks[-1]), sorted_ranks[-1]
-        return False,  -1, None
+
+        return False, -1, None
 
     def _is_straight(self, cards: list) -> tuple:
         """
@@ -117,23 +128,31 @@ class Evaluator(object):
         3. The highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
-        ranks = [card[0] for card in cards]
-        ranks = sorted(ranks, key=lambda x: self.ranks.index(x))
-        if ranks[-1] == "A":
-            if all([i in ranks for i in ["2", "3", "4", "5"]]):
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
+        ranks_list = [card[0] for card in cards]
+
+        ranks_list = sorted(ranks_list, key=lambda x: self.ranks.index(x))
+
+        if ranks_list[-1] == "A":
+            if all([i in ranks_list for i in ["2", "3", "4", "5"]]):
                 return True, self.ranks.index("5"), "5"
-            elif all([i in ranks for i in ["T", "J", "Q", "K"]]):
+
+            elif all([i in ranks_list for i in ["T", "J", "Q", "K"]]):
                 return True, self.ranks.index("A"), "A"
+
             else:
                 return False, -1, None
+
         else:
-            start = self.ranks.index(ranks[0]) + 1
+            # start = self.ranks.index(ranks_list[0]) + 1
+            start = self.ranks.index(ranks_list[0])
+
             for i in range(start, start + 5):
-                if self.ranks[i] not in ranks:
+                if self.ranks[i] not in ranks_list:
                     return False, -1, None
-            return True, self.ranks.index(ranks[-1]), ranks[-1]
+
+            return True, self.ranks.index(ranks_list[-1]), ranks_list[-1]
 
     def _is_four_of_a_kind(self, cards: list) -> tuple:
         """
@@ -144,17 +163,20 @@ class Evaluator(object):
         3. The highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
         ranks = [card[0] for card in cards]
+
         counts = {
             rank: ranks.count(rank)
             for rank in ranks
         }
+
         if 4 in counts.values():
             for rank, count in counts.items():
                 if count == 4:
                     return True, self.ranks.index(rank), rank
+
         return False, -1, None
 
     def _is_full_house(self, cards: list) -> tuple:
@@ -168,15 +190,19 @@ class Evaluator(object):
         5. The second highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
         list_of_ranks = list(set([card[0] for card in cards]))
+
         if len(list_of_ranks) == 2:
             ranks = [card[0] for card in cards]
+
             if ranks.count(list_of_ranks[0]) == 2 and ranks.count(list_of_ranks[1]) == 3:
                 return True, self.ranks.index(list_of_ranks[1]), list_of_ranks[1], self.ranks.index(list_of_ranks[0]), list_of_ranks[0]
+
             elif ranks.count(list_of_ranks[0]) == 3 and ranks.count(list_of_ranks[1]) == 2:
                 return True, self.ranks.index(list_of_ranks[0]), list_of_ranks[0], self.ranks.index(list_of_ranks[1]), list_of_ranks[1]
+
         return False, -1, None, -1, None
 
     def _is_three_of_a_kind(self, cards: list) -> tuple:
@@ -188,18 +214,20 @@ class Evaluator(object):
         3. The highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
 
         ranks = [card[0] for card in cards]
+
         counts = {
             rank: ranks.count(rank)
             for rank in ranks
         }
+
         if 3 in counts.values():
             for rank, count in counts.items():
                 if count == 3:
                     return True, self.ranks.index(rank), rank
+
         return False, -1, None
 
     def _is_two_pair(self, cards: list) -> tuple:
@@ -213,24 +241,32 @@ class Evaluator(object):
         5. The second highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
         ranks = [card[0] for card in cards]
+
         counts = {
             rank: ranks.count(rank) for rank in ranks
         }
+
         pair_counts = sum([1 for count in counts.values() if count == 2])
+
         if pair_counts != 2:
             return False, -1, None, -1, None
+
         else:
             current_highest = -1
             current_second_highest = -1
+
             for rank, count in counts.items():
                 if count == 2 and self.ranks.index(rank) > current_highest:
                     current_highest = self.ranks.index(rank)
+
                 elif count == 2 and self.ranks.index(rank) > current_second_highest:
                     current_second_highest = self.ranks.index(rank)
-            return True, current_highest, self.ranks[current_highest], current_second_highest, self.ranks[current_second_highest]
+
+            return True, current_highest, self.ranks[current_highest], current_second_highest, self.ranks[
+                current_second_highest]
 
     def _is_one_pair(self, cards: list) -> tuple:
         """
@@ -241,10 +277,10 @@ class Evaluator(object):
         3. The highest card
         """
         if isinstance(cards, str):
-            cards = [cards[i: i + 2]
-                     for i in range(0, len(cards), 2)]
+            cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
 
         ranks = [card[0] for card in cards]
+
         counts = {
             rank: ranks.count(rank) for rank in ranks
         }
@@ -271,10 +307,11 @@ class Evaluator(object):
         """
         if isinstance(cards, str):
             cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
+
         if len(cards) != 5:
             raise ValueError("You must provide 5 cards")
-        cards = sorted(
-            cards, key=lambda x: self.rank_and_suites.index(x), reverse=True)
+
+        cards = sorted(cards, key=lambda x: self.rank_and_suites.index(x), reverse=True)
 
         # check for royal flush
         tup = self._is_royal_flush(cards)
@@ -329,33 +366,41 @@ class Evaluator(object):
 
         Returns a list of possible combinations of 5 card sets that can be made from the holecards and community cards
         """
+        possible_cards = []
+
+        if isinstance(holecards, str):
+            holecards = [holecards[i: i + 2] for i in range(0, len(holecards), 2)]
+
         if game_type == 'nlh':
             return ["".join(i) for i in combinations(holecards + community_cards, 5)]
-        possible_cards = []
-        if isinstance(holecards, str):
-            holecards = [holecards[i: i + 2]
-                         for i in range(0, len(holecards), 2)]
-        for hc in combinations(holecards, 2):
-            for cc in combinations(community_cards, 3):
-                possible_cards.append(hc + cc)
-        return ["".join(i) for i in possible_cards]
 
-    def strength_evaluation(self, holecards: list, community_cards: list, game_type='plo4') -> tuple:
+        else:
+            for hc in combinations(holecards, 2):
+                for cc in combinations(community_cards, 3):
+                    possible_cards.append(hc + cc)
+
+            return ["".join(i) for i in possible_cards]
+
+    def strength_evaluation(self, holecards: list, community_cards: list, game_type: str) -> tuple:
         """
         Perform a pairwise comparison of cards
         """
         if isinstance(holecards, str):
-            holecards = [holecards[i:i + 2]
-                         for i in range(0, len(holecards), 2)]
+            holecards = [holecards[i:i + 2] for i in range(0, len(holecards), 2)]
+
         if isinstance(community_cards, str):
-            community_cards = [community_cards[i:i + 2]
-                               for i in range(0, len(community_cards), 2)]
-        all_cards = self.get_possible_card_combos(
-            holecards, community_cards, game_type)
+            community_cards = [community_cards[i:i + 2] for i in range(0, len(community_cards), 2)]
+
+        all_cards = self.get_possible_card_combos(holecards, community_cards, game_type)
+
         combos = {i: self.card_strength_evaluator(i) for i in all_cards}
-        values = sorted(combos.items(), key=lambda x: (
-            x[1][1], x[1][2]), reverse=True)[0]
-        return values[0], values[1][0], values[1][1], values[1][2], values[1][3]
+
+        values = sorted(combos.items(), key=lambda x: (x[1][1], x[1][2]), reverse=True)[0]
+
+        cards = [values[0][i:i + 2] for i in range(0, len(values[0]), 2)]
+        sorted_cards = sorted(cards, key=lambda x: self.rank_and_suites.index(x))
+
+        return ''.join(sorted_cards), values[1][0], values[1][1], values[1][2], values[1][3]
 
     def get_playerwise_evaluation(self, holecards: str, community_cards: str, game_type: str) -> list:
         """
@@ -371,28 +416,31 @@ class Evaluator(object):
         """
         winning_combo, winning_combo_name, winning_combo_rank, high_card_rank, high_card_name = self.strength_evaluation(
             holecards, community_cards, game_type)
+
         return [winning_combo, winning_combo_name, winning_combo_rank, high_card_name, high_card_rank]
 
     def find_intersection(self, cards1, cards2) -> str:
-        """Find intersection between two sets of cards"""
+        """
+        Find intersection between two sets of cards
+        """
         if isinstance(cards1, str):
-            cards1 = [cards1[i: i+2] for i in range(0, len(cards1), 2)]
+            cards1 = [cards1[i: i + 2] for i in range(0, len(cards1), 2)]
 
         if isinstance(cards2, str):
-            cards2 = [cards2[i: i+2] for i in range(0, len(cards2), 2)]
+            cards2 = [cards2[i: i + 2] for i in range(0, len(cards2), 2)]
 
         set1 = set(cards1)
         set2 = set(cards2)
+
         return "".join(set1.intersection(set2))
 
-    def declare_winner(self, player_cards: dict, community_cards: str, game_type: str, return_type: str = 'list') -> list:
+    def declare_winner(self, player_cards: dict, community_cards: str, return_type: str = 'list') -> list:
         """
         Given a set of cards, determine the winner
 
         Inputs:
             player_cards: Dictionary of player cards with player names (p1, p2... pn) as keys and card combinations as values
             community_cards: String of community cards
-            game_type: Type of game
 
         Returns a list of dictionaries with following keys
             'best_combo': Best combination of cards
@@ -402,25 +450,43 @@ class Evaluator(object):
             'community_cards_used': Community cards used in making the best combination
             'high_rank': Highest rank of the best combination
             'high_rank_card': Name of the card with the highest rank
+            'game_type': String type of game 'nlh', 'plo4', 'plo5', 'undefined'
             'holecards': Hole cards
             'holecards_used': Hole cards used in making the best combination
             'player': Player number (p1 - p9)
             'winner': Boolean value indicating whether the player is the winner
         """
-        strengths = dict()
+
+        # Get holecards length to define game_type
+        cards_len = [len(card) for card in player_cards.values()]
+
+        if all(4 == _ for _ in cards_len):
+            game_type = 'nlh'
+        elif all(8 == _ for _ in cards_len):
+            game_type = 'plo4'
+        elif all(10 == _ for _ in cards_len):
+            game_type = 'plo5'
+        else:
+            game_type = 'undefined'
+
+        strengths = {}
+
         for k, holecard in player_cards.items():
-            strengths[k] = self.get_playerwise_evaluation(
-                holecard, community_cards=community_cards, game_type=game_type)
+            strengths[k] = self.get_playerwise_evaluation(holecard, community_cards=community_cards, game_type=game_type)
+
             holecards_used = self.find_intersection(holecard, strengths[k][0])
-            community_cards_used = self.find_intersection(
-                community_cards, strengths[k][0])
+            community_cards_used = self.find_intersection(community_cards, strengths[k][0])
+
             strengths[k].append(holecard)
             strengths[k].append(holecards_used)
             strengths[k].append(community_cards_used)
-        return_dict = dict()
+            strengths[k].append(game_type)
 
-        highest_combo = -1
-        highest_rank = -1
+        return_dict = {}
+
+        highest_combo = []
+        highest_rank = []
+
         for k in strengths:
             return_dict[k] = {
                 'best_combo': strengths[k][0],
@@ -431,29 +497,47 @@ class Evaluator(object):
                 'holecards_used': strengths[k][6],
                 'community_cards_used': strengths[k][7],
                 'high_rank': strengths[k][4],
-                'high_rank_card': strengths[k][3]
+                'high_rank_card': strengths[k][3],
+                'game_type': strengths[k][8]
             }
-            highest_combo = max(highest_combo, strengths[k][2])
-            highest_rank = max(highest_rank, strengths[k][4])
+
+            highest_combo.append(strengths[k][2])
+            highest_rank.append(strengths[k][4])
+
+        # Collect top combo rank
+        top_combo = sorted(highest_combo)[-1:]
+
+        # Collect top cards from top combos and getting highest to compare equal combos
+        top_combo_cards = sorted([v['high_rank'] for k, v in return_dict.items() if v['best_combo_rank'] in top_combo])[-1:]
 
         for k, v in return_dict.items():
-            if v["best_combo_rank"] == highest_combo and v["high_rank"] == highest_rank:
-                v.update(
-                    {
+            # Compare current rank with top
+            if v["best_combo_rank"] in top_combo:
+
+                # Compare current high card with top from top combo, if player have too top combo
+                if v["high_rank"] in top_combo_cards:
+                    v.update({
                         "player": k,
                         "winner": True
-                    }
-                )
+                    })
+
+                # Else, if player have top combo, but not high card, return winner: False
+                else:
+                    v.update({
+                        "player": k,
+                        "winner": False
+                    })
             else:
                 v.update({
                     "player": k,
                     "winner": False
                 })
+
         if return_type == 'list':
-            return [v for v in return_dict.values()]
+            return [_ for _ in return_dict.values()]
+
         elif return_type == 'dict':
             return return_dict
-
 
 if __name__ == '__main__':
     ev = Evaluator()
