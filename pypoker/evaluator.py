@@ -48,12 +48,10 @@ class Evaluator(object):
         if isinstance(cards, str):
             cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
 
-        is_flush = self._is_flush(cards)
-        is_straight = self._is_straight(cards)
         is_royal = self._is_royal(cards)
 
-        if is_flush[0] and is_royal[0] and is_straight[0]:
-            return True, is_straight[1], is_straight[2]
+        if is_royal[0]:
+            return True, is_royal[1], is_royal[2]
 
         return False, -1, None
 
@@ -71,8 +69,9 @@ class Evaluator(object):
         is_straight = self._is_straight(cards)
         is_flush = self._is_flush(cards)
 
-        if is_straight[0] and is_flush[0]:
-            return True, is_straight[1], is_straight[2]
+        if is_straight[2] != 'A':
+            if is_straight[0] and is_flush[0]:
+                return True, is_straight[1], is_straight[2]
 
         return False, -1, None
 
@@ -87,15 +86,11 @@ class Evaluator(object):
         if isinstance(cards, str):
             cards = [cards[i: i + 2] for i in range(0, len(cards), 2)]
 
-        # ranks_list = [card[0] for card in cards]
-        # ranks_list = sorted(ranks_list, key = lambda x: self.ranks.index(x))
         is_straight = self._is_straight(cards)
         is_flush = self._is_flush(cards)
 
-        if is_straight[1] == 'A':
+        if is_straight[2] == 'A':
             if is_straight[0] and is_flush[0]:
-                # return True, self.ranks.index(ranks_list[-1]), ranks_list[-1]
-                # return True, is_straight[1], is_straight[2]
                 return True, is_straight[1], is_straight[2]
 
         return False, -1, None
