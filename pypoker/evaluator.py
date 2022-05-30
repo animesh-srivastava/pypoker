@@ -109,7 +109,8 @@ class Evaluator(object):
         suites = [card[1] for card in cards]
 
         if len(set(suites)) == 1:
-            sorted_ranks = sorted(cards, key=lambda x: self.ranks.index(x[0]))[-1][0]
+            # sorted_ranks = sorted(cards, key=lambda x: self.ranks.index(x[0]))[-1][0]
+            sorted_ranks = [card for x in self.ranks for card in cards if card[0] == x][-1][0]
             return True, self.ranks.index(sorted_ranks[-1]), sorted_ranks[-1]
 
         return False, -1, None
@@ -127,7 +128,8 @@ class Evaluator(object):
 
         ranks_list = [card[0] for card in cards]
 
-        ranks_list = sorted(ranks_list, key=lambda x: self.ranks.index(x))
+        # ranks_list = sorted(ranks_list, key=lambda x: self.ranks.index(x))
+        ranks_list = [card for x in self.ranks for card in ranks_list if card[0] == x]
 
         if ranks_list[-1] == "A":
             if all([i in ranks_list for i in ["2", "3", "4", "5"]]):
@@ -140,7 +142,6 @@ class Evaluator(object):
                 return False, -1, None
 
         else:
-            # start = self.ranks.index(ranks_list[0]) + 1
             start = self.ranks.index(ranks_list[0])
 
             for i in range(start, start + 5):
