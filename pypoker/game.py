@@ -23,6 +23,5 @@ class Poker(object):
         """
         return self.evaluator.declare_winner(
             player_cards=player_cards,
-            community_cards=community_cards,
-            game_type=self.game_type
+            community_cards=community_cards
         )
